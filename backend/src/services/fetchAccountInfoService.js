@@ -1,11 +1,23 @@
 const cheerio = require('cheerio');
 require('dotenv').config({ path: './src/.env' });
 const axios = require('axios');
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
+const proxy = {
+    host: '191.101.127.46',
+    port: 50100,
+    auth: {
+        username: 'fhXCTaPu',
+        password: 'mSoA1bifsu'
+    }
+};
+
+const agent = new HttpsProxyAgent(`http://${proxy.auth.username}:${proxy.auth.password}@${proxy.host}:${proxy.port}`);
 
 const axiosInstance = axios.create({
     timeout: 60000,
-    httpsAgent: new require('https').Agent({ keepAlive: true }),
-    httpAgent: new require('http').Agent({ keepAlive: true })
+    httpsAgent: agent,
+    httpAgent: agent
 });
 
 const fetchAccountInfo = async () => {
