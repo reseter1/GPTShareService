@@ -27,4 +27,4 @@ For detailed information, please refer to the documentation in your preferred la
 
 ---
 
-**Contact:** nguyenhuutai@reseter.space 
+**Contact:** nguyenhuutai.reseter@gmail.com 
