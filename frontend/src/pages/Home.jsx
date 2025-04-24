@@ -19,20 +19,20 @@ import { useToast } from "../context/ToastContext"
 const mockAccounts = [
     {
         id: 1,
-        email: "Loading...",
-        password: "Loading...",
+        email: "Can't load accounts",
+        password: "Can't load accounts",
         status: "disabled",
     },
     {
         id: 2,
-        email: "Loading...",
-        password: "Loading...",
+        email: "Can't load accounts",
+        password: "Can't load accounts",
         status: "disabled",
     },
     {
         id: 3,
-        email: "Loading...",
-        password: "Loading...",
+        email: "Can't load accounts",
+        password: "Can't load accounts",
         status: "disabled",
     },
 ]
@@ -53,6 +53,9 @@ const Home = () => {
     const [accounts, setAccounts] = useState(mockAccounts)
     const [submittingFeedback, setSubmittingFeedback] = useState(false)
     const [changingPassword, setChangingPassword] = useState(false)
+    const [loadingAccounts, setLoadingAccounts] = useState(true)
+    const [longLoading, setLongLoading] = useState(false)
+    const loadingTimer = useRef(null)
     const hasFetchedAccounts = useRef(false)
     const { addToast } = useToast()
     const navigate = useNavigate()
@@ -61,6 +64,12 @@ const Home = () => {
         const fetchAccounts = async () => {
             if (hasFetchedAccounts.current) return
             hasFetchedAccounts.current = true
+            setLoadingAccounts(true)
+
+            loadingTimer.current = setTimeout(() => {
+                setLongLoading(true)
+            }, 10000)
+
             const response = await fetch(`${API_BACKEND}/api/gpt-fetcher/fetch-gpt-account`, {
                 method: "GET",
                 headers: {
@@ -68,6 +77,10 @@ const Home = () => {
                 }
             })
             const dataResponse = await response.json()
+
+            clearTimeout(loadingTimer.current)
+            setLoadingAccounts(false)
+            setLongLoading(false)
 
             if (dataResponse.success) {
                 const { success, data } = dataResponse;
@@ -518,7 +531,78 @@ const Home = () => {
                                         Free ChatGPT Plus Accounts
                                     </motion.h2>
 
-                                    {accounts.map((account, index) => (
+                                    {loadingAccounts && (
+                                        <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+                                            <div className="flex flex-col items-center justify-center">
+                                                <div className="loading-spinner mb-4">
+                                                    <div className="spinner-circle"></div>
+                                                    <div className="spinner-circle-inner"></div>
+                                                </div>
+                                                <span className="shimmer-text font-medium text-center">
+                                                    {longLoading ?
+                                                        "System is still loading, please be patient..." :
+                                                        "Loading accounts from server..."}
+                                                </span>
+                                            </div>
+                                            <style jsx>{`
+                                                .loading-spinner {
+                                                    position: relative;
+                                                    width: 50px;
+                                                    height: 50px;
+                                                }
+                                                .spinner-circle {
+                                                    position: absolute;
+                                                    border: 3px solid rgba(0, 0, 0, 0.1);
+                                                    border-top-color: #000000;
+                                                    border-radius: 50%;
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    animation: spin 1s linear infinite;
+                                                }
+                                                .spinner-circle-inner {
+                                                    position: absolute;
+                                                    top: 10px;
+                                                    left: 10px;
+                                                    right: 10px;
+                                                    bottom: 10px;
+                                                    border: 3px solid transparent;
+                                                    border-bottom-color: #555555;
+                                                    border-radius: 50%;
+                                                    animation: spin 0.8s linear infinite reverse;
+                                                }
+                                                .shimmer-text {
+                                                    color: #333;
+                                                    position: relative;
+                                                    overflow: hidden;
+                                                }
+                                                .shimmer-text::before {
+                                                    content: '';
+                                                    position: absolute;
+                                                    top: 0;
+                                                    left: -100%;
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    background: linear-gradient(
+                                                        90deg,
+                                                        rgba(255, 255, 255, 0) 0%,
+                                                        rgba(255, 255, 255, 0.8) 50%,
+                                                        rgba(255, 255, 255, 0) 100%
+                                                    );
+                                                    animation: shimmer 2s infinite;
+                                                }
+                                                @keyframes spin {
+                                                    0% { transform: rotate(0deg); }
+                                                    100% { transform: rotate(360deg); }
+                                                }
+                                                @keyframes shimmer {
+                                                    0% { left: -100%; }
+                                                    100% { left: 100%; }
+                                                }
+                                            `}</style>
+                                        </div>
+                                    )}
+
+                                    {!loadingAccounts && accounts.map((account, index) => (
                                         <motion.div
                                             key={account.id}
                                             className="bg-gray-50 p-4 rounded-lg shadow-sm"

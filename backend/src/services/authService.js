@@ -5,7 +5,7 @@ const { Op } = require('sequelize');
 const crypto = require('crypto');
 const { sendEmail } = require('./emailService');
 const APP_NAME = process.env.APP_NAME || 'GPT Share';
-const APP_URL = process.env.APP_URL || 'https://gptshare.reseter.space';
+const APP_URL = process.env.FRONTEND_URL || 'https://gptshare.reseter.space';
 
 const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
